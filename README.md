@@ -1,2 +1,2 @@
 # runawfe-utils
-Utils for editing runawfe business processes
+Utils for editing business process files in runawfe.org.
