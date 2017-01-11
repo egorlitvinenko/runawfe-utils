@@ -28,6 +28,13 @@ import java.util.regex.Pattern;
  */
 public class SearchTextMain {
 
+    public static final Set<String> defaultExcludes = new HashSet<>();
+    static {
+        defaultExcludes.add("png");
+        defaultExcludes.add("xlsx");
+        defaultExcludes.add("~");
+    }
+
     public static void main(String[] args) {
     }
 
@@ -118,7 +125,7 @@ public class SearchTextMain {
 
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                if (file.resolve("").toString().endsWith("~")) {
+                if (!isFileForSearching(file)) {
                     return FileVisitResult.CONTINUE;
                 }
                 final List<String> findTexts = new LinkedList<>();
@@ -149,6 +156,10 @@ public class SearchTextMain {
 
         });
         return results;
+    }
+
+    public static Boolean isFileForSearching(final Path file) {
+        return defaultExcludes.stream().noneMatch(ext -> file.resolve("").toString().endsWith(ext));
     }
 
 }

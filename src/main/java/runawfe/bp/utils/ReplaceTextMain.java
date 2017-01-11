@@ -10,7 +10,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -50,11 +49,15 @@ public class ReplaceTextMain {
     public static void replacePattern(final String rootFolder, final List<Pattern> texts, final List<String> replaces, final int depth)
             throws IOException {
         final Path root = Paths.get(rootFolder);
-        Objects.requireNonNull(texts.size() == replaces.size() ? 1 : null);
+        if (texts.size() != replaces.size()) {
+            throw new RuntimeException("texts.size() != replaces.size()");
+        }
         Files.walkFileTree(root, Collections.emptySet(), depth, new SimpleFileVisitor<Path>() {
-
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (!SearchTextMain.isFileForSearching(file)) {
+                    return FileVisitResult.CONTINUE;
+                }
                 String content = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
                 for (int i = 0; i < texts.size(); ++i) {
                     final Pattern token = texts.get(i);
